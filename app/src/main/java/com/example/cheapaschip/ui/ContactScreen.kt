@@ -193,6 +193,7 @@ class ContactScreenState {
     var currentStep by mutableStateOf(1)
     var termsRead by mutableStateOf(false)
     var showTermsDialog by mutableStateOf(false)
+    var showPasswordDialog by mutableStateOf(false)
 
     // Step 1
     var selectedScooterId by mutableStateOf<String?>(null)
@@ -284,6 +285,7 @@ class ContactScreenState {
         generatedContract = null
         customerHotelAddress = ""
         customerRoomNumber = ""
+        showPasswordDialog = false
     }
 }
 
@@ -303,6 +305,7 @@ fun ContactScreen(
     var currentStep by RefDelegate({ state.currentStep }, { state.currentStep = it })
     var termsRead by RefDelegate({ state.termsRead }, { state.termsRead = it })
     var showTermsDialog by RefDelegate({ state.showTermsDialog }, { state.showTermsDialog = it })
+    var showPasswordDialog by RefDelegate({ state.showPasswordDialog }, { state.showPasswordDialog = it })
 
     LaunchedEffect(currentStep) {
         scrollState.scrollTo(0)
@@ -773,6 +776,82 @@ fun ContactScreen(
                                     }
                                 }
                             }
+
+                            // Scratch Photos Section (Max 8 photos) relocated from Step 2
+                            Spacer(modifier = Modifier.height(8.dp))
+                            HorizontalDivider(color = Color.LightGray.copy(alpha = 0.5f))
+                            Spacer(modifier = Modifier.height(4.dp))
+
+                            Column(
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = "Scooter Scratch Photos (${scratchImages.size}/8)",
+                                        fontWeight = FontWeight.SemiBold
+                                    )
+                                    if (scratchImages.size < 8) {
+                                        TextButton(
+                                             onClick = {
+                                                 val uri = createTempImageUri("scratch_")
+                                                 tempScratchUriStr = uri.toString()
+                                                 scratchCameraLauncher.launch(uri)
+                                             }
+                                        ) {
+                                            Text("Add Photo")
+                                        }
+                                    }
+                                }
+                                
+                                if (scratchImages.isNotEmpty()) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        scratchImages.forEachIndexed { index, bitmap ->
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(60.dp)
+                                                    .border(1.dp, Color.LightGray, RoundedCornerShape(8.dp))
+                                                    .clip(RoundedCornerShape(8.dp))
+                                            ) {
+                                                DocumentImage(
+                                                    image = bitmap,
+                                                    modifier = Modifier
+                                                        .fillMaxSize()
+                                                        .clickable { maximizedDocImage = bitmap }
+                                                )
+                                                // Small delete button at top-right
+                                                Box(
+                                                    modifier = Modifier
+                                                        .align(Alignment.TopEnd)
+                                                        .size(18.dp)
+                                                        .background(Color.Red, shape = CircleShape)
+                                                        .clickable { scratchImages.removeAt(index) },
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    Icon(
+                                                        imageVector = Icons.Default.Close,
+                                                        contentDescription = "Remove",
+                                                        tint = Color.White,
+                                                        modifier = Modifier.size(10.dp)
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    Text(
+                                        text = "No scratch photos captured yet.",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = Color.Gray
+                                    )
+                                }
+                            }
                         }
                     }
                     2 -> {
@@ -888,78 +967,6 @@ fun ContactScreen(
                                     ) {
                                         Text("Take Driver's License Photo")
                                     }
-                                }
-                            }
-
-                            // Scratch Photos Section (Max 8 photos)
-                            Column(
-                                verticalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text(
-                                        text = "Scooter Scratch Photos (${scratchImages.size}/8)",
-                                        fontWeight = FontWeight.SemiBold
-                                    )
-                                    if (scratchImages.size < 8) {
-                                        TextButton(
-                                             onClick = {
-                                                 val uri = createTempImageUri("scratch_")
-                                                 tempScratchUriStr = uri.toString()
-                                                 scratchCameraLauncher.launch(uri)
-                                             }
-                                        ) {
-                                            Text("Add Photo")
-                                        }
-                                    }
-                                }
-                                
-                                if (scratchImages.isNotEmpty()) {
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
-                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                                    ) {
-                                        scratchImages.forEachIndexed { index, bitmap ->
-                                            Box(
-                                                modifier = Modifier
-                                                    .size(60.dp)
-                                                    .border(1.dp, Color.LightGray, RoundedCornerShape(8.dp))
-                                                    .clip(RoundedCornerShape(8.dp))
-                                            ) {
-                                                DocumentImage(
-                                                    image = bitmap,
-                                                    modifier = Modifier
-                                                        .fillMaxSize()
-                                                        .clickable { maximizedDocImage = bitmap }
-                                                )
-                                                // Small delete button at top-right
-                                                Box(
-                                                    modifier = Modifier
-                                                        .align(Alignment.TopEnd)
-                                                        .size(18.dp)
-                                                        .background(Color.Red, shape = CircleShape)
-                                                        .clickable { scratchImages.removeAt(index) },
-                                                    contentAlignment = Alignment.Center
-                                                ) {
-                                                    Icon(
-                                                        imageVector = Icons.Default.Close,
-                                                        contentDescription = "Remove",
-                                                        tint = Color.White,
-                                                        modifier = Modifier.size(10.dp)
-                                                    )
-                                                }
-                                            }
-                                        }
-                                    }
-                                } else {
-                                    Text(
-                                        text = "No scratch photos captured yet.",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = Color.Gray
-                                    )
                                 }
                             }
 
@@ -2008,6 +2015,10 @@ fun ContactScreen(
                                             Toast.makeText(context, "Plate number does not exist in our system", Toast.LENGTH_SHORT).show()
                                             return@Button
                                         }
+                                        if (scratchImages.isEmpty()) {
+                                            Toast.makeText(context, "Please attach at least 1 scooter scratch photo", Toast.LENGTH_SHORT).show()
+                                            return@Button
+                                        }
                                     }
                                     2 -> {
                                         if (isOcrRunning) {
@@ -2020,10 +2031,6 @@ fun ContactScreen(
                                         }
                                         if (licenseImage == null) {
                                             Toast.makeText(context, "Please capture Driver's License photo", Toast.LENGTH_SHORT).show()
-                                            return@Button
-                                        }
-                                        if (scratchImages.isEmpty()) {
-                                            Toast.makeText(context, "Please attach at least 1 scooter scratch photo", Toast.LENGTH_SHORT).show()
                                             return@Button
                                         }
                                         val daysInput = rentalDaysStr.toIntOrNull()
@@ -2099,57 +2106,7 @@ fun ContactScreen(
                         // Print & Save Contract button (inside Step 7)
                         Button(
                             onClick = {
-                                generatedContract?.let { contract ->
-                                    RentalRepository.addContract(contract, context)
-                                    // Save signature path (deep copy)
-                                    val savedPath = Path()
-                                    savedPath.addPath(signaturePath)
-                                    RentalRepository.signaturePaths[contract.id] = savedPath
-                                    
-                                    // Auto-generate and save PDF contract
-                                    generateContractPdf(
-                                        context = context,
-                                        contract = contract,
-                                        scooter = selectedScooter!!,
-                                        signaturePath = signaturePath,
-                                        passportImage = passportImage,
-                                        licenseImage = licenseImage
-                                    ) { generatedFile ->
-                                        pdfFileToShow = generatedFile
-                                    }
-                                    
-                                    Toast.makeText(context, "Contract finalized successfully!", Toast.LENGTH_LONG).show()
-
-                                    // Reset all fields
-                                    customerName = ""
-                                    phoneCountryCode = "+66"
-                                    customerPhone = ""
-                                    passportImage = null
-                                    licenseImage = null
-                                    rentalDaysStr = "1"
-                                    depositType = "Cash"
-                                    notes = ""
-                                    selectedScooterId = null
-                                    scooterPlate = ""
-                                    customerWhatsApp = ""
-                                    whatsAppSameAsPhone = false
-                                    customPricePerDayStr = "0"
-                                    fuelLevel = "Full (6/6)"
-                                    fuelIndex = 6
-                                    rentalTimeStr = getInitialRentalTime()
-                                    helmetCount = 1
-                                    bodyConditionNotes = ""
-                                    scratchImages.clear()
-                                    customerHotelAddress = ""
-                                    customerRoomNumber = ""
-                                    signaturePath = Path()
-                                    signatureTrigger = 0
-                                    hasSigned = false
-                                    onClearSelection()
-                                    generatedContract = null
-                                    currentStep = 1 // Reset step to 1
-                                    onContractGenerated()
-                                }
+                                showPasswordDialog = true
                             },
                             shape = RoundedCornerShape(12.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
@@ -2205,6 +2162,131 @@ fun ContactScreen(
                             }
                         }
                     }
+                )
+            }
+            
+            // Password Authorization Dialog
+            if (showPasswordDialog) {
+                var passwordInput by remember { mutableStateOf("") }
+                var isError by remember { mutableStateOf(false) }
+
+                AlertDialog(
+                    onDismissRequest = { showPasswordDialog = false },
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                if (passwordInput == "1234") {
+                                    isError = false
+                                    showPasswordDialog = false
+                                    generatedContract?.let { contract ->
+                                        RentalRepository.addContract(contract, context)
+                                        // Save signature path (deep copy)
+                                        val savedPath = Path()
+                                        savedPath.addPath(signaturePath)
+                                        RentalRepository.signaturePaths[contract.id] = savedPath
+                                        
+                                        // Auto-generate and save PDF contract
+                                        generateContractPdf(
+                                            context = context,
+                                            contract = contract,
+                                            scooter = selectedScooter!!,
+                                            signaturePath = signaturePath,
+                                            passportImage = passportImage,
+                                            licenseImage = licenseImage
+                                        ) { generatedFile ->
+                                            pdfFileToShow = generatedFile
+                                            // Automatically trigger WhatsApp and Email share intent
+                                            sharePdfToCustomer(context, generatedFile, contract)
+                                        }
+                                        
+                                        Toast.makeText(context, "Contract finalized successfully!", Toast.LENGTH_LONG).show()
+
+                                        // Reset all fields
+                                        customerName = ""
+                                        phoneCountryCode = "+66"
+                                        customerPhone = ""
+                                        passportImage = null
+                                        licenseImage = null
+                                        rentalDaysStr = "1"
+                                        depositType = "Cash"
+                                        notes = ""
+                                        selectedScooterId = null
+                                        scooterPlate = ""
+                                        customerWhatsApp = ""
+                                        whatsAppSameAsPhone = false
+                                        customPricePerDayStr = "0"
+                                        fuelLevel = "Full (6/6)"
+                                        fuelIndex = 6
+                                        rentalTimeStr = getInitialRentalTime()
+                                        helmetCount = 1
+                                        bodyConditionNotes = ""
+                                        scratchImages.clear()
+                                        customerHotelAddress = ""
+                                        customerRoomNumber = ""
+                                        signaturePath = Path()
+                                        signatureTrigger = 0
+                                        hasSigned = false
+                                        onClearSelection()
+                                        generatedContract = null
+                                        currentStep = 1 // Reset step to 1
+                                        onContractGenerated()
+                                    }
+                                } else {
+                                    isError = true
+                                }
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                            shape = RoundedCornerShape(8.dp)
+                        ) {
+                            Text("Confirm Payment", fontWeight = FontWeight.Bold)
+                        }
+                    },
+                    dismissButton = {
+                        OutlinedButton(
+                            onClick = { showPasswordDialog = false },
+                            shape = RoundedCornerShape(8.dp)
+                        ) {
+                            Text("Cancel")
+                        }
+                    },
+                    title = {
+                        Text(
+                            text = "Authorize Payment Receipt",
+                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    },
+                    text = {
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = "Please enter the employee authorization password to verify payment receipt.",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            OutlinedTextField(
+                                value = passwordInput,
+                                onValueChange = { passwordInput = it },
+                                label = { Text("Password (Default: 1234)") },
+                                visualTransformation = androidx.compose.ui.text.input.PasswordVisualTransformation(),
+                                keyboardOptions = KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Password),
+                                isError = isError,
+                                singleLine = true,
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                            if (isError) {
+                                Text(
+                                    text = "Incorrect password. Please try again.",
+                                    color = MaterialTheme.colorScheme.error,
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                            }
+                        }
+                    },
+                    shape = RoundedCornerShape(16.dp)
                 )
             }
 
@@ -3621,5 +3703,30 @@ fun PdfViewerDialog(
                 }
             }
         }
+    }
+}
+
+fun sharePdfToCustomer(context: Context, file: File, contract: com.example.cheapaschip.data.RentalContract) {
+    try {
+        val uri = androidx.core.content.FileProvider.getUriForFile(
+            context,
+            "${context.packageName}.fileprovider",
+            file
+        )
+        val shareIntent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+            type = "application/pdf"
+            putExtra(android.content.Intent.EXTRA_STREAM, uri)
+            
+            val msgBody = "Hello ${contract.customerName},\n\nHere is your rental contract PDF from CheapAsChips.\n- WhatsApp: ${contract.customerWhatsApp}\n- Email: ${contract.customerEmail}"
+            putExtra(android.content.Intent.EXTRA_TEXT, msgBody)
+            putExtra(android.content.Intent.EXTRA_SUBJECT, "CheapAsChips Rental Contract - ${contract.id}")
+            addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        val chooser = android.content.Intent.createChooser(shareIntent, "Share Contract PDF to WhatsApp/Email").apply {
+            addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        context.startActivity(chooser)
+    } catch (e: Exception) {
+        e.printStackTrace()
     }
 }
