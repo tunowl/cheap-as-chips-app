@@ -1,27 +1,26 @@
 package com.example.cheapaschip.ui.theme
 
 import androidx.compose.ui.graphics.Color
-import com.example.cheapaschip.data.RentalRepository
 
-// Primary Accent Palette - Dynamically mapped to the active theme color psychology settings
-val BrandBlueMedium: Color
-    get() = RentalRepository.activeTheme.primary
+// Primary Blue Palette
+val BrandBlueMedium = Color(0xFF2563EB)
+val BrandBlueDark = Color(0xFF1E3A8A)
+val BrandBlueLight = Color(0xFFEFF6FF)
 
-val BrandBlueDark: Color
-    get() = RentalRepository.activeTheme.primaryDark
-
-val BrandBlueLight: Color
-    get() = RentalRepository.activeTheme.primaryLight
-
-// Secondary Green Palette
-val BrandGreenDark = Color(0xFF047857)
+// Secondary Green Palette (Available/Success)
 val BrandGreenMedium = Color(0xFF10B981)
+val BrandGreenDark = Color(0xFF047857)
 val BrandGreenLight = Color(0xFFECFDF5)
 
-// Tertiary Yellow Palette
-val BrandYellowDark = Color(0xFFB45309)
-val BrandYellowMedium = Color(0xFFF59E0B)
-val BrandYellowLight = Color(0xFFFEF3C7)
+// Tertiary Red Palette (Rented/Warnings)
+val BrandRedMedium = Color(0xFFEF4444)
+val BrandRedDark = Color(0xFFB91C1C)
+val BrandRedLight = Color(0xFFFEF2F2)
+
+// Compatibility aliases for warning cards (mapped to Red/White for blue-white-red-green design)
+val BrandYellowMedium = BrandRedMedium
+val BrandYellowDark = BrandRedDark
+val BrandYellowLight = Color(0xFFFFFFFF) // Redefined to White for clean document paper backgrounds
 
 // Neutral Colors
 val SurfaceWhite = Color(0xFFFFFFFF)

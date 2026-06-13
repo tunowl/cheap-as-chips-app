@@ -16,25 +16,6 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
-import androidx.compose.ui.graphics.Color
-
-enum class AppThemeColor(
-    val displayName: String,
-    val primary: Color,
-    val primaryDark: Color,
-    val primaryLight: Color,
-    val traits: String
-) {
-    BLUE("Blue", Color(0xFF2563EB), Color(0xFF1E3A8A), Color(0xFFEFF6FF), "peace, stability, calmness, confidence, tranquility, sincerity, affection, integrity"),
-    GREEN("Green", Color(0xFF10B981), Color(0xFF047857), Color(0xFFECFDF5), "life, growth, environment, healing, money, safety, relaxation, freshness"),
-    PURPLE("Purple", Color(0xFF8B5CF6), Color(0xFF6D28D9), Color(0xFFF5F3FF), "royalty, luxury, dignity, wisdom, spirituality, passion, vision, magic"),
-    YELLOW("Yellow", Color(0xFFF59E0B), Color(0xFFB45309), Color(0xFFFEF3C7), "joy, cheerfulness, friendliness, intellect, energy, warmth, caution, cowardice"),
-    PINK("Pink", Color(0xFFEC4899), Color(0xFFBE185D), Color(0xFFFDF2F8), "romance, compassion, faithfulness, beauty, love, friendship, sensitivity"),
-    RED("Red", Color(0xFFEF4444), Color(0xFFB91C1C), Color(0xFFFEF2F2), "danger, passion, daring, romance, style, excitement, urgency, energetic"),
-    BLACK("Black", Color(0xFF1E293B), Color(0xFF0F172A), Color(0xFFF1F5F9), "sophistication, power, mystery, formality, evil, death"),
-    GRAY("Gray", Color(0xFF6B7280), Color(0xFF374151), Color(0xFFF9FAFB), "stability, security, strength of character, authority, maturity")
-}
-
 data class ModelRentStats(
     val modelName: String,
     val rentalCount: Int,
@@ -67,7 +48,6 @@ data class DashboardStats(
 )
 
 object RentalRepository {
-    var activeTheme by mutableStateOf(AppThemeColor.BLUE)
 
     var standardDepositAmount by mutableStateOf(3000.0)
     var maxiDepositAmount by mutableStateOf(10000.0)
